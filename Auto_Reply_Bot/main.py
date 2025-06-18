@@ -1,22 +1,21 @@
-# main.py
 import streamlit as st
-from auto_bot import start_bot
+from auto_bot import generate_reply
 
-st.set_page_config(page_title="Auto Chat Replier")
+st.set_page_config(page_title="AI Auto Chat Bot", layout="centered")
+st.title("🤖 AI Auto Chat Bot")
 
-st.title("🤖 Naruto Chat Replier")
-st.markdown("Simulates how Naruto would roast someone based on your pasted chat.")
+st.markdown("This bot replies like **Naruto** – fun, funny, and full of roast!")
 
-api_key = st.text_input("Enter OpenAI API Key", type="password")
-chat_text = st.text_area("Paste WhatsApp Chat Text")
+api_key = st.text_input("🔐 Enter your OpenAI API Key", type="password")
+user_message = st.text_area("💬 Enter your message to Naruto", height=200)
 
-if st.button("Generate Reply"):
-    if not api_key or not chat_text:
-        st.warning("API key and chat are required.")
+if st.button("Get Naruto's Reply"):
+    if not api_key or not user_message:
+        st.warning("Please provide both the API key and a message.")
     else:
         try:
-            reply = start_bot(chat_text, api_key)
-            st.success("✅ Reply generated successfully:")
+            reply = generate_reply(user_message, api_key)
+            st.success("Reply Generated:")
             st.markdown(f"**💬 Naruto's Reply:**\n\n{reply}")
         except Exception as e:
             st.error(f"❌ Error: {e}")
