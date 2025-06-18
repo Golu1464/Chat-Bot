@@ -1,22 +1,22 @@
-import streamlit as st
-from auto_bot import start_bot
-from watermark import add_watermark
+# auto_bot.py (Streamlit-safe version without pyautogui or clipboard access)
 
-st.set_page_config(page_title="Auto Chat Replier by Sonu Kumar Sharma", layout="centered")
-st.title("🤖 Auto Chat Replier - Naruto Style")
+from openai import OpenAI
 
-add_watermark()
+def is_last_message_from_sender(chat_log, sender_name="Rohan Das"):
+    messages = chat_log.strip().split("/2024] ")[-1]
+    return sender_name in messages
 
-api_key = st.sidebar.text_input("Enter OpenAI API Key", type="password")
-chat_history = st.text_area("Paste WhatsApp Chat Here", height=300)
+def generate_auto_reply(chat_history, api_key):
+    client = OpenAI(api_key=api_key)
 
-if st.button("Generate Reply"):
-    if not api_key or not chat_history:
-        st.warning("Please provide both chat and API key.")
-    else:
-        try:
-            response = start_bot(chat_history, api_key)
-            st.success("✅ Reply Generated:")
-            st.markdown(f"**💬 Naruto's Reply:**\n\n{response}")
-        except Exception as e:
-            st.error(f"Error: {e}")
+    if is_last_message_from_sender(chat_history):
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are Naruto, a bilingual coder from India. Respond humorously and roast the other person."},
+                {"role": "system", "content": "Don't start like this: [21:02, 12/6/2024] Rohan Das:"},
+                {"role": "user", "content": chat_history}
+            ]
+        )
+        return completion.choices[0].message.content
+    return None
